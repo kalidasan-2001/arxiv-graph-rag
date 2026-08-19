@@ -49,7 +49,9 @@ PostgreSQL, Qdrant, Neo4j, and LLM environment variables.
 
 Workflow: `.github/workflows/pages.yml`
 
-Runs on pushes to `main` and manual dispatch.
+Runs on manual dispatch. It is intentionally not triggered by every push
+while this repository is private because the current GitHub account plan
+does not support Pages for this private repository.
 
 Output:
 
@@ -103,9 +105,11 @@ Recommended next production-like setup:
 3. Run the backend with environment variables pointing at those services.
 4. Set the GitHub repository variable `VITE_API_BASE_URL` to the public
    backend URL.
-5. Enable GitHub Pages with source `GitHub Actions`.
-6. Push to `main`; Actions verifies, publishes the backend image, and
-   deploys the frontend.
+5. Enable GitHub Pages with source `GitHub Actions` after making the repo
+   public or enabling private Pages on the account.
+6. Push to `main`; Actions verifies and publishes the backend image.
+7. Run the Pages workflow manually, or re-enable its push trigger after
+   Pages support is available for the repo.
 
 ## Verification Gates
 
