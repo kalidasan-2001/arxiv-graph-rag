@@ -1,0 +1,78 @@
+{
+  "benchmark_version": "v1",
+  "case_count": 5,
+  "cases": [
+    {
+      "category": "semantic",
+      "entity_type": "paper",
+      "entity_type_correct": true,
+      "graph_operation": null,
+      "graph_operation_correct": true,
+      "id": "plan-semantic",
+      "intent": "semantic_explanation",
+      "intent_correct": true,
+      "status": "ok",
+      "strategy": "vector",
+      "strategy_correct": true
+    },
+    {
+      "category": "structural",
+      "entity_type": "paper",
+      "entity_type_correct": true,
+      "graph_operation": "paper_datasets",
+      "graph_operation_correct": true,
+      "id": "plan-structural-dataset",
+      "intent": "paper_datasets",
+      "intent_correct": true,
+      "status": "ok",
+      "strategy": "graph",
+      "strategy_correct": true
+    },
+    {
+      "category": "shared_entity",
+      "entity_type": "paper",
+      "entity_type_correct": true,
+      "graph_operation": "shared_methods",
+      "graph_operation_correct": true,
+      "id": "plan-shared-method",
+      "intent": "shared_methods",
+      "intent_correct": true,
+      "status": "ok",
+      "strategy": "graph",
+      "strategy_correct": true
+    },
+    {
+      "category": "multi_hop",
+      "entity_type": "paper",
+      "entity_type_correct": true,
+      "graph_operation": "datasets_from_citing_papers",
+      "graph_operation_correct": true,
+      "id": "plan-multi-hop",
+      "intent": "datasets_from_citing_papers",
+      "intent_correct": true,
+      "status": "ok",
+      "strategy": "graph",
+      "strategy_correct": true
+    },
+    {
+      "category": "mixed",
+      "entity_type": "paper",
+      "entity_type_correct": true,
+      "graph_operation": "paper_datasets",
+      "graph_operation_correct": true,
+      "id": "plan-mixed",
+      "intent": "mixed_semantic_structural",
+      "intent_correct": true,
+      "status": "ok",
+      "strategy": "hybrid",
+      "strategy_correct": true
+    }
+  ],
+  "metrics": {
+    "entity_type_accuracy": 1.0,
+    "graph_operation_accuracy": 1.0,
+    "intent_accuracy": 1.0,
+    "strategy_accuracy": 1.0
+  },
+  "note": "Fixture-provider evaluation validates planner software behavior, not live model accuracy."
+}

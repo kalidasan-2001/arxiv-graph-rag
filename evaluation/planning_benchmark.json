@@ -1,0 +1,75 @@
+{
+  "benchmark_version": "v1",
+  "cases": [
+    {
+      "id": "plan-semantic",
+      "category": "semantic",
+      "query": "Explain how GraphSteal works.",
+      "analysis": {
+        "intent": "semantic_explanation",
+        "semantic_retrieval_required": true,
+        "structural_retrieval_required": false,
+        "entities": [{"text": "GraphSteal", "entity_type": "paper"}]
+      },
+      "expected_strategy": "vector",
+      "expected_graph_operation": null,
+      "expected_entity_type": "paper"
+    },
+    {
+      "id": "plan-structural-dataset",
+      "category": "structural",
+      "query": "Which datasets does GraphSteal evaluate on?",
+      "analysis": {
+        "intent": "paper_datasets",
+        "semantic_retrieval_required": false,
+        "structural_retrieval_required": true,
+        "entities": [{"text": "GraphSteal", "entity_type": "paper"}]
+      },
+      "expected_strategy": "graph",
+      "expected_graph_operation": "paper_datasets",
+      "expected_entity_type": "paper"
+    },
+    {
+      "id": "plan-shared-method",
+      "category": "shared_entity",
+      "query": "Which papers use the same methods as GraphSteal?",
+      "analysis": {
+        "intent": "shared_methods",
+        "semantic_retrieval_required": false,
+        "structural_retrieval_required": true,
+        "entities": [{"text": "GraphSteal", "entity_type": "paper"}]
+      },
+      "expected_strategy": "graph",
+      "expected_graph_operation": "shared_methods",
+      "expected_entity_type": "paper"
+    },
+    {
+      "id": "plan-multi-hop",
+      "category": "multi_hop",
+      "query": "Which datasets are used by papers citing GraphSteal?",
+      "analysis": {
+        "intent": "datasets_from_citing_papers",
+        "semantic_retrieval_required": false,
+        "structural_retrieval_required": true,
+        "entities": [{"text": "GraphSteal", "entity_type": "paper"}]
+      },
+      "expected_strategy": "graph",
+      "expected_graph_operation": "datasets_from_citing_papers",
+      "expected_entity_type": "paper"
+    },
+    {
+      "id": "plan-mixed",
+      "category": "mixed",
+      "query": "Explain GraphSteal's attack and list its evaluation datasets.",
+      "analysis": {
+        "intent": "mixed_semantic_structural",
+        "semantic_retrieval_required": true,
+        "structural_retrieval_required": true,
+        "entities": [{"text": "GraphSteal", "entity_type": "paper"}]
+      },
+      "expected_strategy": "hybrid",
+      "expected_graph_operation": "paper_datasets",
+      "expected_entity_type": "paper"
+    }
+  ]
+}

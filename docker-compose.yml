@@ -1,0 +1,93 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: arxiv
+      POSTGRES_PASSWORD: arxiv
+      POSTGRES_DB: arxiv_graph_rag
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arxiv -d arxiv_graph_rag"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  qdrant:
+    # Pinned to match the installed `qdrant-client` version (see
+    # pyproject.toml) so the client's own version-compatibility check has
+    # nothing to warn about.
+    image: qdrant/qdrant:v1.19.0
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      # The image has neither curl nor wget -- a plain TCP connect via
+      # bash's /dev/tcp is the simplest check that's actually available
+      # inside this container (prompt #11's "health check if supported
+      # cleanly" -- this is the clean option here).
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/6333'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  neo4j:
+    # Pinned major/edition (matches this developer machine's existing
+    # `neo4j:5-community` container) -- community edition is sufficient at
+    # this project's scale (CLAUDE.md #44); no enterprise features needed.
+    image: neo4j:5-community
+    environment:
+      # `NEO4J_AUTH=<user>/<password>` is how the image's first-boot
+      # bootstrap sets the initial password -- never a hard-coded value
+      # (CLAUDE.md #29/#36); falls back to the same `change-me` default
+      # `.env`/`.env.example` document if `NEO4J_PASSWORD` isn't set in
+      # the host environment/.env docker-compose reads for interpolation.
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-change-me}
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      # `cypher-shell` ships in every Neo4j image -- a real query round
+      # trip is a stronger readiness signal than a bare port check.
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p \"${NEO4J_PASSWORD:-change-me}\" 'RETURN 1' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Overrides the .env value (which targets `localhost` for host-side
+      # tools like alembic) with the in-network Compose service hostname.
+      DATABASE_URL: postgresql+psycopg://arxiv:arxiv@postgres:5432/arxiv_graph_rag
+      QDRANT_URL: http://qdrant:6333
+      NEO4J_URI: bolt://neo4j:7687
+      # Absolute path backed by the persistent `paper_storage` volume below
+      # -- downloaded PDFs must survive container restarts/rebuilds, not
+      # live only in the ephemeral container filesystem.
+      PAPER_STORAGE_PATH: /data/papers
+    volumes:
+      - paper_storage:/data/papers
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  paper_storage:
+  qdrant_data:
+  neo4j_data:

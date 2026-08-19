@@ -1,0 +1,110 @@
+{
+  "benchmark_version": "v1",
+  "cases": [
+    {
+      "id": "sem-method-a",
+      "category": "semantic",
+      "question": "How does Controlled Paper A describe its graph reconstruction method?",
+      "graph_request": null,
+      "expected_targets": [{"target_type": "chunk", "target_id": "chunk:eval:a-method", "relevance": 1}],
+      "relevance_target_type": "chunk",
+      "notes": "Semantic-only; graph and hybrid are not applicable under explicit graph-operation retrieval."
+    },
+    {
+      "id": "sem-limit-a",
+      "category": "semantic",
+      "question": "What limitation does Controlled Paper A discuss?",
+      "graph_request": null,
+      "expected_targets": [{"target_type": "chunk", "target_id": "chunk:eval:a-limit", "relevance": 1}],
+      "relevance_target_type": "chunk",
+      "notes": "Semantic-only controlled text target."
+    },
+    {
+      "id": "struct-datasets-a",
+      "category": "structural",
+      "question": "Which datasets does Controlled Paper A evaluate on?",
+      "graph_request": {"operation": "paper_datasets", "entity_id": "paper:arxiv:eval-a", "limit": 5},
+      "expected_targets": [{"target_type": "relationship", "target_id": "rel:eval:a-dataset", "relevance": 1}],
+      "relevance_target_type": "relationship",
+      "notes": "Direct graph relationship."
+    },
+    {
+      "id": "struct-methods-a",
+      "category": "structural",
+      "question": "Which methods does Controlled Paper A use?",
+      "graph_request": {"operation": "paper_methods", "entity_id": "paper:arxiv:eval-a", "limit": 5},
+      "expected_targets": [{"target_type": "relationship", "target_id": "rel:eval:a-method", "relevance": 1}],
+      "relevance_target_type": "relationship",
+      "notes": "Direct graph relationship."
+    },
+    {
+      "id": "struct-tasks-a",
+      "category": "structural",
+      "question": "Which task does Controlled Paper A address?",
+      "graph_request": {"operation": "paper_tasks", "entity_id": "paper:arxiv:eval-a", "limit": 5},
+      "expected_targets": [{"target_type": "entity", "target_id": "entity:task:eval-reconstruction", "relevance": 1}],
+      "relevance_target_type": "entity",
+      "notes": "Direct graph entity target."
+    },
+    {
+      "id": "shared-dataset-a",
+      "category": "shared_entity",
+      "question": "Which papers use the same dataset as Controlled Paper A?",
+      "graph_request": {"operation": "shared_datasets", "entity_id": "paper:arxiv:eval-a", "limit": 5},
+      "expected_targets": [{"target_type": "entity", "target_id": "paper:arxiv:eval-b", "relevance": 1}],
+      "relevance_target_type": "entity",
+      "notes": "Shared dataset graph traversal."
+    },
+    {
+      "id": "shared-method-a",
+      "category": "shared_entity",
+      "question": "Which papers use the same method as Controlled Paper A?",
+      "graph_request": {"operation": "shared_methods", "entity_id": "paper:arxiv:eval-a", "limit": 5},
+      "expected_targets": [{"target_type": "entity", "target_id": "paper:arxiv:eval-c", "relevance": 1}],
+      "relevance_target_type": "entity",
+      "notes": "Shared method graph traversal."
+    },
+    {
+      "id": "multi-hop-citing-datasets-a",
+      "category": "multi_hop",
+      "question": "Which datasets are used by papers that cite Controlled Paper A?",
+      "graph_request": {"operation": "datasets_from_citing_papers", "entity_id": "paper:arxiv:eval-a", "limit": 5},
+      "expected_targets": [
+        {
+          "target_type": "path",
+          "target_id": "entity:dataset:eval-shared",
+          "relevance": 1,
+          "path_signature": ["paper:arxiv:eval-a", "rel:eval:b-cites-a", "paper:arxiv:eval-b", "rel:eval:b-dataset", "entity:dataset:eval-shared"]
+        }
+      ],
+      "relevance_target_type": "path",
+      "notes": "Two-hop graph path."
+    },
+    {
+      "id": "multi-hop-methods-dataset",
+      "category": "multi_hop",
+      "question": "Which methods are used by papers evaluated on EvalSet?",
+      "graph_request": {"operation": "methods_for_dataset", "entity_id": "entity:dataset:eval-shared", "limit": 5},
+      "expected_targets": [
+        {
+          "target_type": "path",
+          "target_id": "entity:method:eval-graphrag",
+          "relevance": 1,
+          "path_signature": ["entity:dataset:eval-shared", "rel:eval:a-dataset", "paper:arxiv:eval-a", "rel:eval:a-method", "entity:method:eval-graphrag"]
+        }
+      ],
+      "relevance_target_type": "path",
+      "notes": "Dataset-paper-method traversal."
+    },
+    {
+      "id": "mixed-dataset-attack",
+      "category": "mixed",
+      "question": "Find evidence about graph reconstruction attacks among papers that use EvalSet.",
+      "graph_request": {"operation": "papers_for_dataset", "entity_id": "entity:dataset:eval-shared", "limit": 5},
+      "expected_targets": [{"target_type": "paper", "target_id": "paper:arxiv:eval-a", "relevance": 1}],
+      "relevance_target_type": "paper",
+      "notes": "Both text and structural paper evidence may satisfy the target."
+    }
+  ]
+}
+
